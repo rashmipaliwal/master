@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+   <beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/util
+   	    http://www.springframework.org/schema/util/spring-util.xsd">
+   
+   <mvc:annotation-driven />
+   
+   <context:component-scan base-package="com.gl.h2o.controller" />
+   
+   <context:annotation-config></context:annotation-config>
+   
+   <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />
+   
+   <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+   	   <property name="methodNameResolver" ref="methodResolver" />
+  </bean>
+  
+  <bean id="methodResolver" class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver" />
+  
+  <bean id="handlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="mappings">
+      <value>/*=h2oController</value>
+    </property>
+  </bean>
+  
+  <bean id="jspViewResolver"
+    class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+  </bean>
+
+  <!-- the application context definition for the DispatcherServlet -->
+
+  <bean name="h2oController" class="com.gl.h2o.controller.H2OController">
+  	<property name="h2oService" ref="h2oService"/>
+  </bean>
+  
+  <bean name="h2oService" class="com.gl.h2o.service.H2OServiceImpl">
+      <property name="h2oDao" ref="h2oDao"/>
+  </bean>
+  
+  <bean name="h2oDao" class="com.gl.h2o.dao.H2ODaoImpl">
+      <property name="dataSource" ref="dataSource"/>
+      <property name="sqlSource" ref="h2osql" />
+  </bean>
+  
+  <util:properties id="h2osql"
+    location="classpath:h2osql.properties" />
+  
+  <bean id="dataSource"
+	class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+   <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+   <property name="url" value="jdbc:mysql://ec2-54-201-247-252.us-west-2.compute.amazonaws.com:3306/h2o"/>
+   <property name="username" value="root"/>
+   <property name="password" value="Passw0rd"/>
+</bean>
+
+</beans>
